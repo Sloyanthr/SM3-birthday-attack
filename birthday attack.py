@@ -15,7 +15,7 @@ def randomstr(randomlength=8):
 #查找并加入,num为攻击次数，length为字符串长度
 
 def attack(num,length = 6):
-    hashmap=[]
+    hashmap={}
     alphatable = "abcdefghijklmnopqrstuvwxyz"
     i = 0
     for s in itertools.permutations(alphatable,length):
@@ -24,15 +24,17 @@ def attack(num,length = 6):
         for k in range(length):
             strs+=s[k]
         data = bytes(strs, encoding='utf-8')
-        sign = sm3.sm3_hash(func.bytes_to_list(data))
+        #切片大小界定碰撞长度
+        sign = sm3.sm3_hash(func.bytes_to_list(data))[:7]
         if sign in hashmap:
           print("攻击成功")
-          return (hashmap,strs)
+          return (hashmap[sign],strs)
         else:
-            hashmap.append(strs)
+            hashmap[sign]=strs
         if i>=num:
             break
     print("攻击失败")
     return (0, 0)
 
-print(attack(pow(2,25),8))
+
+print(attack(pow(2,16),8))
